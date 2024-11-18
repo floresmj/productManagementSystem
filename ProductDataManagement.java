@@ -3,14 +3,14 @@ import java.io.FileReader;
 import java.io.IOException;
 
 class Node {
-    int productId;
+    String productId; // Updated to String
     String name;
     String category;
     double price;
     Node left, right, parent;
     boolean color; // true for red, false for black
 
-    public Node(int productId, String name, String category, double price) {
+    public Node(String productId, String name, String category, double price) {
         this.productId = productId;
         this.name = name;
         this.category = category;
@@ -27,12 +27,12 @@ class RedBlackTree {
     private final Node NIL;
 
     public RedBlackTree() {
-        NIL = new Node(-1, "", "", 0.0);
+        NIL = new Node(null, null, null, 0.0);
         NIL.color = false; // NIL nodes are black
         root = NIL;
     }
 
-    public void insert(int productId, String name, String category, double price) {
+    public void insert(String productId, String name, String category, double price) {
         Node newNode = new Node(productId, name, category, price);
         newNode.left = NIL;
         newNode.right = NIL;
@@ -41,9 +41,9 @@ class RedBlackTree {
 
         while (current != NIL) {
             parent = current;
-            if (productId < current.productId) {
+            if (productId.compareTo(current.productId) < 0) {
                 current = current.left;
-            } else if (productId > current.productId) {
+            } else if (productId.compareTo(current.productId) > 0) {
                 current = current.right;
             } else {
                 System.out.println("Product ID " + productId + " already exists. Skipping...");
@@ -54,7 +54,7 @@ class RedBlackTree {
         newNode.parent = parent;
         if (parent == null) {
             root = newNode;
-        } else if (productId < parent.productId) {
+        } else if (productId.compareTo(parent.productId) < 0) {
             parent.left = newNode;
         } else {
             parent.right = newNode;
@@ -65,14 +65,14 @@ class RedBlackTree {
     }
 
     private void insertFix(Node node) {
-        // Implement the balancing logic to ensure the tree properties
-        // (Rotation and recoloring as needed)
+        // Implement balancing logic here (rotations and color adjustments)
+        // Use Red-Black Tree rules to maintain balance
     }
 
-    public Node search(int productId) {
+    public Node search(String productId) {
         Node current = root;
-        while (current != NIL && productId != current.productId) {
-            if (productId < current.productId) {
+        while (current != NIL && !productId.equals(current.productId)) {
+            if (productId.compareTo(current.productId) < 0) {
                 current = current.left;
             } else {
                 current = current.right;
@@ -81,7 +81,7 @@ class RedBlackTree {
         return current == NIL ? null : current;
     }
 
-    public void printProduct(int productId) {
+    public void printProduct(String productId) {
         Node product = search(productId);
         if (product != null) {
             System.out.println("Product ID: " + product.productId);
@@ -97,25 +97,41 @@ class RedBlackTree {
 public class ProductDataManagement {
     public static void main(String[] args) {
         RedBlackTree tree = new RedBlackTree();
-        String filePath = "/mnt/data/amazon-product-data.csv"; // Adjust path as needed
+        String filePath = "C:\\Users\\jflor\\Documents\\GitHub\\productManagementSystem\\out\\production\\productManagementSystem\\amazon-product-data.csv";
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine(); // Skip header
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                int productId = Integer.parseInt(data[0]);
-                String name = data[1];
-                String category = data[2];
-                double price = Double.parseDouble(data[3]);
+                // Split on commas that are not within quotes
+                String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (data.length != 4) {
+                    System.out.println("Invalid line format: " + line);
+                    continue; // Skip malformed lines
+                }
+                String productId = data[0].trim();
+                String name = data[1].trim();
+                String category = data[2].trim();
 
-                tree.insert(productId, name, category, price);
+                try {
+                    double price = Double.parseDouble(data[3].trim());
+                    tree.insert(productId, name, category, price);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid price format for product ID " + productId + ": " + data[3]);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Example search for testing
-        tree.printProduct(101); // Replace with actual product ID for demonstration
+        // Demonstration of search queries
+        System.out.println("\nSearch Results:");
+        tree.printProduct("4c69b61db1fc16e7013b43fc926e502d"); // Replace with actual product ID
+        tree.printProduct("exampleProductID1"); // Replace with another product ID
+        tree.printProduct("exampleProductID2"); // Replace with another product ID
+
+        // Demonstration of insertions
+        System.out.println("\nInsertion Tests:");
+        tree.insert("newProductID", "New Product", "Category", 99.99); // New insertion
+        tree.insert("4c69b61db1fc16e7013b43fc926e502d", "Duplicate Product", "Category", 49.99); // Duplicate, should trigger error
     }
 }
-
