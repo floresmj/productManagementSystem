@@ -113,7 +113,11 @@ public class ProductDataManagement {
                 String category = data[2].trim();
 
                 try {
-                    double price = Double.parseDouble(data[3].trim());
+                    String priceString = data[3].trim();
+                    if (priceString.startsWith("$")) {
+                        priceString = priceString.substring(1); // Remove the '$' symbol
+                    }
+                    double price = Double.parseDouble(priceString);
                     tree.insert(productId, name, category, price);
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid price format for product ID " + productId + ": " + data[3]);
