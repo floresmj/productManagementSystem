@@ -1,0 +1,60 @@
+Product Data Management System
+
+Overview
+This project implements a data management system using a Red-Black Tree for efficient product insertion and search. Each product has a unique ID, name, category, and price, read from a CSV file.
+
+Features
+- Balanced Search Tree: Red-Black Tree ensures O(log n) time for insertions and searches.
+- CSV Data Ingestion: Reads and inserts products from `amazon-product-data.csv`, ensuring proper data handling and parsing.
+- Duplicate Handling: Detects and skips duplicate product IDs, printing a warning message.
+
+Time Complexity
+- Insertion & Search: O(log n) due to tree balancing through rotations and recoloring.
+- Balancing Mechanism: The `insertFix()` method ensures the tree maintains Red-Black properties:
+  - Rotations (left and right) adjust the tree structure as needed.
+  - Recoloring ensures no consecutive red nodes and maintains the black height.
+
+Project Structure
+- `ProductDataManagement.java`: Main class for reading the CSV, inserting, and searching products.
+- `Node.java`: Class representing the nodes of the Red-Black Tree.
+- `RedBlackTree.java`: Contains the logic for insertion, searching, and balancing the tree.
+
+Implementation Details
+- The `insertFix()` method ensures the Red-Black Tree properties are maintained after insertion through rotations and recoloring.
+- Duplicate product IDs are detected and skipped to maintain data integrity.
+
+Assumptions and Limitations
+- The CSV file must have the following format: `product-id, name, category, price`.
+- The program only performs basic error checking for malformed data.
+
+Demonstrations
+Insertions:
+1. New Product:
+   - Product ID: `newProductID`
+   - Outcome: Successfully inserted into the Red-Black Tree.
+2. Duplicate Product:
+   - Product ID: `4c69b61db1fc16e7013b43fc926e502d`
+   - Outcome: Skipped with the message: "Product ID 4c69b61db1fc16e7013b43fc926e502d already exists. Skipping..."
+
+Searches:
+1. Existing Product:
+   - Product ID: `4c69b61db1fc16e7013b43fc926e502d`
+   - Output:
+     ```
+     Product ID: 4c69b61db1fc16e7013b43fc926e502d
+     Name: Example Product Name
+     Category: Example Category
+     Price: $49.99
+     ```
+
+2. Non-Existing Product:
+   - Product ID: `nonExistingProductID`
+   - Output:
+     ```
+     Product not found.
+     ```
+
+Run Instructions
+1. Compile the code:
+   ```bash
+   javac ProductDataManagement.java
